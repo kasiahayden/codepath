@@ -22,9 +22,7 @@ public class EditItemActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_item);
-		Log.d("info", "intent string: " + getIntent().getStringExtra("text_to_edit"));
 		text_to_edit = getIntent().getStringExtra("text_to_edit");
-		Log.d("info", "text to edit: " + text_to_edit);
 		position = getIntent().getIntExtra("position", 0);
 		EditText etEditItem = (EditText) findViewById(R.id.etEditItem);
 		etEditItem.setText(text_to_edit);
@@ -52,11 +50,6 @@ public class EditItemActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-//	public void onSubmit(View v) {
-//		// closes the activity and returns to first screen
-//		this.finish();
-//	}
-//	
 	public void onSubmit(View v) {
 	  EditText etName = (EditText) findViewById(R.id.etEditItem);
 	  Intent data = new Intent();

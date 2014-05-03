@@ -1,6 +1,5 @@
 package codepath.apps.simpletodo;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ToDoActivity extends Activity {
 	ArrayList<String> items;
@@ -34,16 +31,15 @@ public class ToDoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_to_do);
 		lvItems = (ListView) findViewById(R.id.lvItems);
-		populateArrayItems();
+		readItems();
 		itemsAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, items);
 		lvItems.setAdapter(itemsAdapter);
-		readItems();
+		populateArrayItems();
 		setupListViewListener();
 	}
 	
 	private void populateArrayItems() {
-		items = new ArrayList<String>();
 		items.add("First Item");
 		items.add("Second Item");
 		items.add("Third item");
@@ -51,7 +47,6 @@ public class ToDoActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.to_do, menu);
 		return true;
@@ -72,10 +67,8 @@ public class ToDoActivity extends Activity {
 	public void addTodoItem(View v) {
 		EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
 		itemsAdapter.add(etNewItem.getText().toString());
-		Toast.makeText(this, etNewItem.getText().toString() + " added",
-				Toast.LENGTH_SHORT).show();
 		etNewItem.setText("");
-		saveItems(); // writes to file
+		saveItems();
 	}
 
 	private void setupListViewListener() {
@@ -85,7 +78,7 @@ public class ToDoActivity extends Activity {
 					int position, long id) {
 				items.remove(position);
 				itemsAdapter.notifyDataSetChanged();
-				// saveItems();
+				saveItems();
 				return true;
 			}
 		});
@@ -94,20 +87,14 @@ public class ToDoActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Log.d("info", "text to edit: next line:");
-				
 				TextView txt = (TextView) parent.getChildAt(position);
 				String editMe = txt.getText().toString();
-				Log.d("info", "text to edit: " + editMe);
 				launchEditItemView(editMe, position);
 			}
 		});
-		
-		
 	}
 
 	public void launchEditItemView(String editMe, int position) {
-		Log.d("info", "putExtras: " + editMe + " " + position);
 		Intent i = new Intent(ToDoActivity.this, EditItemActivity.class);
 		i.putExtra("text_to_edit", editMe);
 		i.putExtra("position", position);
@@ -116,30 +103,13 @@ public class ToDoActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Toast.makeText(this,
-				"Added item: " + data.getExtras().getString("edited_text"),
-				Toast.LENGTH_SHORT).show();
+		
 		if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
 			String edited_text = data.getExtras().getString("edited_text");
-			int position = data.getExtras().getInt("position");
-			
-			itemsAdapter.insert(edited_text, position);
-			//items.set(position, edited_text);
-			//items.remove(position+1);
-			
-//			lvItems.getItemIdAtPosition(position)
-//			
-//			TextView txt = (TextView) parent.getChildAt(position);
-			
-			//TextView txt = (TextView) lvItems.getItemAtPosition(position);
-			
-			//TextView txt = (TextView) lvItems.getChildAt(0);
-			//txt.setText(edited_text);
-//			Log.d("info", "text of elt at 0th pos: " + txt.
-//					toString());
-			
-//			itemsAdapter.notifyDataSetChanged();
-//			saveItems();
+			int position = data.getExtras().getInt("position");			
+			items.set(position, edited_text);
+			itemsAdapter.notifyDataSetChanged();
+			saveItems();
 		} 
 	}
 
@@ -163,5 +133,4 @@ public class ToDoActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-
 }
